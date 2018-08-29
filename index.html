@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <div class="dragbar"></div>
+
+    <div class="content">
+      <h1 class="page-title">Welcome To The AFTV Controller</h1>
+
+      <form id="connection-form">
+        <label for="ip">
+          What is the IP Address of your Amazon Fire TV?
+        </label>
+        <input type="text" id="ip" name="ip" value="192.168.200.5">
+
+        <button type="submit">Connect To Device</button>
+      </form>
+
+      <div class="controller">
+        <button id="up" data-controller-key="up"> ^ </button>
+        <button id="down" data-controller-key="down"> v </button>
+        <button id="left" data-controller-key="left"> < </button>
+        <button id="right" data-controller-key="right"> > </button>
+
+        <button id="enter" data-controller-key="enter">Enter</button>
+
+        <button id="back" data-controller-key="back">Back</button>
+        <button id="home" data-controller-key="home">Home</button>
+        <button id="menu" data-controller-key="menu">Menu</button>
+
+        <button id="rewind" data-controller-key="rewind">Rewind</button>
+        <button id="play-pause" data-controller-key="play-pause">Play/Pause</button>
+        <button id="fast-forward" data-controller-key="fast-forward">Fast Forward</button>
+
+        <input type="text" id="free-type">
+      </div>
+    </div>
+
+    <script src="./controller.js"></script>
+    <script>
+      let connForm = document.getElementById('connection-form')
+      let ipField = document.getElementById('ip')
+      let controller;
+      
+      connForm.addEventListener('submit', ($e) => {
+        $e.preventDefault()
+
+        controller = new AFTVController(ipField.value)
+        controller.connectToDevice().then(() => {
+          document.querySelectorAll('[data-controller-key]').forEach(button => {
+            let keyPressed = button.getAttribute('data-controller-key')
+
+            button.addEventListener('click', () => {
+              controller.sendKey(keyPressed)
+            })
+          })
+
+          document.getElementById('free-type').addEventListener('keydown', $e => {
+            let key = $e.key.toLowerCase()
+
+            if (key === ' ') {
+              key = 'space'
+            }
+
+            controller.sendKey(key)
+            console.log($e)
+          })
+        })
+      })
+    </script>
+  </body>
+</html>
